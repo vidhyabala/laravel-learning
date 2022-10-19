@@ -29,3 +29,4 @@ Route::get('/get_all_posts', [employee::class, 'index']);
 Route::post('/create_post', [employee::class, 'store']);
 Route::get('/get_single_post/{id}', [employee::class, 'show']);
 Route::put('/update_post/{id}', [employee::class, 'update']);
+Route::delete('/delete_post/{id}', [employee::class, 'destroy']);

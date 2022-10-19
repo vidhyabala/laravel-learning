@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\employees; 
+use validator;
 
 class employee extends Controller
 {
@@ -42,6 +43,23 @@ class employee extends Controller
      */
     public function store(Request $request)
     {
+        $validator = \Validator::make($request->all(), [
+            'name' => 'required',       
+            'email'=> 'required',    
+            'phone'=> 'required',    
+            'password'=> 'required',    
+        ]);
+
+        if ($validator->fails()) {
+            $responseArr['message'] = $validator->errors();;
+
+            return response($responseArr,401)
+                ->header('Content-Type', 'application/json')
+                ->header('X-Header-One', 'Header Value')
+                ->header('X-Header-Two', 'Header Value'); 
+           // return response()->json($responseArr, Response::HTTP_BAD_REQUEST);
+        }
+
         $employee = new employees();
         $employee->emp_name = $request->name;
         $employee->emp_email = $request->email;
@@ -97,6 +115,23 @@ class employee extends Controller
      */
     public function update(Request $request, $id)
     {
+        $validator = \Validator::make($request->all(), [
+            'name' => 'required',       
+            'email'=> 'required',    
+            'phone'=> 'required',    
+            'password'=> 'required',    
+        ]);
+
+        if ($validator->fails()) {
+            $responseArr['message'] = $validator->errors();;
+
+            return response($responseArr,401)
+                ->header('Content-Type', 'application/json')
+                ->header('X-Header-One', 'Header Value')
+                ->header('X-Header-Two', 'Header Value'); 
+           // return response()->json($responseArr, Response::HTTP_BAD_REQUEST);
+        }
+        
         $employee = new employees();
 
         $data['emp_name'] = $request->name;
@@ -123,6 +158,13 @@ class employee extends Controller
      */
     public function destroy($id)
     {
-        //
+        $employee = new employees();
+        $del_employee = employees::where('id',$id)->delete();
+
+        $resp = array("status"=>'success','message' => "Employee Record deleted");
+        return response($resp,200)
+                    ->header('Content-Type', 'application/json')
+                    ->header('X-Header-One', 'Header Value')
+                    ->header('X-Header-Two', 'Header Value');
     }
 }
