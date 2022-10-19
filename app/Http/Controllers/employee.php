@@ -20,9 +20,7 @@ class employee extends Controller
         $data = array('data' => $all_employee);
 
         return response($data,200)
-            ->header('Content-Type', 'application/json')
-            ->header('X-Header-One', 'Header Value')
-            ->header('X-Header-Two', 'Header Value'); 
+            ->header('Content-Type', 'application/json'); 
     }
 
     /**
@@ -54,9 +52,7 @@ class employee extends Controller
             $responseArr['message'] = $validator->errors();;
 
             return response($responseArr,401)
-                ->header('Content-Type', 'application/json')
-                ->header('X-Header-One', 'Header Value')
-                ->header('X-Header-Two', 'Header Value'); 
+                ->header('Content-Type', 'application/json'); 
            // return response()->json($responseArr, Response::HTTP_BAD_REQUEST);
         }
 
@@ -70,11 +66,11 @@ class employee extends Controller
 
         $resp = array("status"=>'success','message' => "Employee Added");
         
-        
-        return response($resp,200)
-                    ->header('Content-Type', 'application/json')
-                    ->header('X-Header-One', 'Header Value')
-                    ->header('X-Header-Two', 'Header Value'); 
+        return response()->json(['user' => $employee, 'message' => 'Successfully created!'], 200);
+        // return response($resp,200)
+        //             ->header('Content-Type', 'application/json')
+        //             ->header('X-Header-One', 'Header Value')
+        //             ->header('X-Header-Two', 'Header Value'); 
     }
 
     /**
@@ -85,14 +81,22 @@ class employee extends Controller
      */
     public function show($id)
     {
+        //$employee = new employees();
+        $check_emp_id = employees::find($id);
+        //print_r($check_emp_id); die;
+        if(!$check_emp_id)
+        {
+            $resp = array("status"=>'failure','message' => "Couldn't find Employee detail");
+    
+            return response($resp,401)
+                        ->header('Content-Type', 'application/json'); 
+        }
         $single_employee = employees::where('id', $id)->get();
 
         $data = array('single_data',$single_employee);
 
         return response($data,200)
-                    ->header('Content-Type', 'application/json')
-                    ->header('X-Header-One', 'Header Value')
-                    ->header('X-Header-Two', 'Header Value');
+                    ->header('Content-Type', 'application/json');
     }
 
     /**
@@ -126,12 +130,10 @@ class employee extends Controller
             $responseArr['message'] = $validator->errors();;
 
             return response($responseArr,401)
-                ->header('Content-Type', 'application/json')
-                ->header('X-Header-One', 'Header Value')
-                ->header('X-Header-Two', 'Header Value'); 
+                ->header('Content-Type', 'application/json'); 
            // return response()->json($responseArr, Response::HTTP_BAD_REQUEST);
         }
-        
+
         $employee = new employees();
 
         $data['emp_name'] = $request->name;
@@ -145,9 +147,7 @@ class employee extends Controller
         
         
         return response($resp,200)
-                    ->header('Content-Type', 'application/json')
-                    ->header('X-Header-One', 'Header Value')
-                    ->header('X-Header-Two', 'Header Value'); 
+                    ->header('Content-Type', 'application/json'); 
     }
 
     /**
@@ -158,13 +158,18 @@ class employee extends Controller
      */
     public function destroy($id)
     {
-        $employee = new employees();
-        $del_employee = employees::where('id',$id)->delete();
-
-        $resp = array("status"=>'success','message' => "Employee Record deleted");
-        return response($resp,200)
-                    ->header('Content-Type', 'application/json')
-                    ->header('X-Header-One', 'Header Value')
-                    ->header('X-Header-Two', 'Header Value');
+        $emp = employees::find($id);
+        
+        if($emp)
+        {
+            $result = $emp->delete();
+            $resp = array("status"=>'success','message' => "Employee Record deleted");
+            return response($resp,200)
+                    ->header('Content-Type', 'application/json');
+        }else{
+            $resp = array("status"=>'failure','message' => "delete operation failed");
+            return response($resp,200)
+                    ->header('Content-Type', 'application/json');
+        }
     }
 }
