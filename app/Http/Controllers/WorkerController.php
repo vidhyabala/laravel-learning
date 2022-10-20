@@ -60,9 +60,20 @@ class WorkerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id) : JsonResponse
     {
-        //
+        $worker = Worker::where('id',$id)->get();
+
+        if($worker)
+        {
+            //to check if there is no record with the given id
+            return response()->json([
+                'data' => [
+                    'worker' => $worker
+                ]
+            ]);
+        }
+        
     }
 
     /**
