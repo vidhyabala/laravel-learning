@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\employee;
+use App\Http\Controllers\WorkerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,3 +31,5 @@ Route::post('/create_post', [employee::class, 'store']);
 Route::get('/get_single_post/{id}', [employee::class, 'show']);
 Route::put('/update_post/{id}', [employee::class, 'update']);
 Route::delete('/delete_post/{id}', [employee::class, 'destroy']);
+
+Route::apiResource('worker', WorkerController::class);
