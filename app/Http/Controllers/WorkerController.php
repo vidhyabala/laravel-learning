@@ -62,14 +62,17 @@ class WorkerController extends Controller
      */
     public function show($id) : JsonResponse
     {
-        $worker = Worker::where('id',$id)->get();
+        //$worker = Worker::where('id',$id)->get();
+
+        $worker = Worker::find($id);
 
         if($worker)
         {
+            $get_address = $worker->address;
             //to check if there is no record with the given id
             return response()->json([
                 'data' => [
-                    'worker' => $worker
+                    'worker' => $worker,
                 ]
             ]);
         }
@@ -85,7 +88,28 @@ class WorkerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+
+        $query = Worker::find($id);
+        //To clarify - put method query params
+        if($query)
+        {
+            $updateWorker = $query->update($data);
+
+            return response()->json([
+                'data' => [
+                    'status' => true,
+                    'msg' => 'Worker updated successfully'
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'data' => [
+                'status' => false,
+                'msg' => 'Oops! Something went wrong'
+            ]
+        ]);
     }
 
     /**
@@ -96,6 +120,25 @@ class WorkerController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $query = Worker::find($id);
+
+        if($query)
+        {
+            $deleteWorker = $query->delete();
+
+            return response()->json([
+                'data' => [
+                    'status' => true,
+                    'msg' => 'Worker deleted successfully'
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'data' => [
+                'status' => false,
+                'msg' => 'Oops! Something went wrong'
+            ]
+        ]);
     }
 }

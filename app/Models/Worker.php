@@ -13,4 +13,12 @@ class Worker extends Model
      * @var string[]
      */
     protected $guarded = ['id'];
+
+    /**
+     * Get the address associated with the user.
+     */
+    public function address()
+    {
+        return $this->hasOne(Address::class,'employee_id');
+    }
 }
