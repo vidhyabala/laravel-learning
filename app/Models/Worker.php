@@ -19,6 +19,6 @@ class Worker extends Model
      */
     public function address()
     {
-        return $this->hasOne(Address::class,'employee_id');
+        return $this->hasOne(Address::class);
     }
 }

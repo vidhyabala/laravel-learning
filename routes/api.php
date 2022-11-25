@@ -34,6 +34,3 @@ Route::put('/update_post/{id}', [employee::class, 'update']);
 Route::delete('/delete_post/{id}', [employee::class, 'destroy']);
 
 Route::apiResource('worker', WorkerController::class);
-Route::apiResource('address', AddressController::class);
-
-Route::put('/get_user_address/{id}', [employee::class, 'update']);

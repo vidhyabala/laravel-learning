@@ -9,11 +9,9 @@ class Address extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['employee_id']; 
-    
     protected $guarded = ['id'];
 
-    public function employee()
+    public function worker()
     {
         return $this->belongsTo(Worker::class);
     }

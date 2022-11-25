@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\Worker;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class WorkerController extends Controller
 {
@@ -15,7 +17,7 @@ class WorkerController extends Controller
      */
     public function index(): JsonResponse
     {
-        $worker = Worker::all();
+        $worker = Worker::with('address')->get();
 
         return response()->json([
             'data' => [
@@ -34,10 +36,13 @@ class WorkerController extends Controller
     {
         $data = $request->all();
 
-        $query = Worker::create($data);
+        $worker  = Arr::only($data, ['name', 'email', 'mobile']);
+        $query = Worker::create($worker);
 
-        if($query)
+        if($query->id)
         {
+            $address = Arr::except($data, ['name', 'email', 'mobile']);
+            $query->address()->create($address);
             return response()->json([
                 'data' => [
                     'status' => true,
@@ -62,13 +67,19 @@ class WorkerController extends Controller
      */
     public function show($id) : JsonResponse
     {
-        //$worker = Worker::where('id',$id)->get();
+        $worker = Worker::where('id', $id)->with('address')->get();
+        // $worker = Worker::find($id)->load('address');
 
-        $worker = Worker::find($id);
+        /**
+         * This below code is not a ideal way to get the address record
+         */
+        // $worker = Worker::find($id);
+        // $worker = $worker->address()->get();
+
+        // $address = Address::where('worker_id', $id)->with('worker')->get();
 
         if($worker)
         {
-            $get_address = $worker->address;
             //to check if there is no record with the given id
             return response()->json([
                 'data' => [
@@ -76,7 +87,12 @@ class WorkerController extends Controller
                 ]
             ]);
         }
-        
+        return response()->json([
+            'data' => [
+                'status' => false,
+                'msg' => 'Oops! Something went wrong'
+            ]
+        ]);
     }
 
     /**
@@ -84,18 +100,23 @@ class WorkerController extends Controller
      *
      * @param  Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+
+    public function update(Request $request, $id): JsonResponse
     {
         $data = $request->all();
-
         $query = Worker::find($id);
         //To clarify - put method query params
         if($query)
         {
-            $updateWorker = $query->update($data);
-
+            $worker  = Arr::only($data, ['name', 'email', 'mobile']);
+            $updateWorker = $query->update($worker);
+            if($updateWorker)
+            {
+                $address = Arr::except($data, ['name', 'email', 'mobile']);
+                $query->address()->update($address);
+            }
             return response()->json([
                 'data' => [
                     'status' => true,
@@ -103,7 +124,6 @@ class WorkerController extends Controller
                 ]
             ]);
         }
-
         return response()->json([
             'data' => [
                 'status' => false,
@@ -116,16 +136,15 @@ class WorkerController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
         $query = Worker::find($id);
-
         if($query)
         {
-            $deleteWorker = $query->delete();
-
+            $query->address()->delete();
+            $query->delete();
             return response()->json([
                 'data' => [
                     'status' => true,
@@ -133,7 +152,6 @@ class WorkerController extends Controller
                 ]
             ]);
         }
-
         return response()->json([
             'data' => [
                 'status' => false,
