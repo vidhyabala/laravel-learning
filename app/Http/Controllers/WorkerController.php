@@ -17,7 +17,7 @@ class WorkerController extends Controller
      */
     public function index(): JsonResponse
     {
-        $worker = Worker::with('address')->get();
+        $worker = Worker::with('address','education_qualification')->get();
 
         return response()->json([
             'data' => [
@@ -37,12 +37,27 @@ class WorkerController extends Controller
         $data = $request->all();
 
         $worker  = Arr::only($data, ['name', 'email', 'mobile']);
+        
         $query = Worker::create($worker);
 
         if($query->id)
         {
             $address = Arr::except($data, ['name', 'email', 'mobile']);
+            
             $query->address()->create($address);
+
+            $education_qualification = Arr::only($data, ['education_qualification']);
+            $request_data = json_decode($request->getContent(),true);
+           
+            $education = array();
+            foreach($education_qualification['education_qualification'] as $edu)
+            {
+                $education[] = array( "education" => $edu['education'],"worker_id" => $query->id);
+            }
+           
+            $query->education_qualification()->insert($education);
+           
+           
             return response()->json([
                 'data' => [
                     'status' => true,

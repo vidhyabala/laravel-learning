@@ -21,4 +21,9 @@ class Worker extends Model
     {
         return $this->hasOne(Address::class);
     }
+
+    public function education_qualification()
+    {
+        return $this->hasOne(Qualification::class);
+    }
 }
